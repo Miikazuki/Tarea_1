@@ -1,0 +1,93 @@
+// Punto_4.cpp
+// Implementa funciones para norma L2 (euclidiana) y L∞ de un arreglo (vector o matriz).
+// Comentarios añadidos para explicar cada función y secciones principales.
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <limits>
+#include <iomanip>
+
+using namespace std;
+
+// compute_norms:
+// - Entrada:
+//     const vector<double>& a : arreglo de valores (puede representarse un vector o una matriz linealizada).
+// - Salida (por referencia):
+//     double &l2   : se asigna la norma L2 (sqrt(suma de cuadrados)).
+//     double &linf : se asigna la norma L∞ (máximo valor absoluto).
+// - Descripción:
+//     Recorre todos los elementos del arreglo, acumula la suma de cuadrados de los valores absolutos
+//     para calcular la norma L2 y mantiene el máximo absoluto para la norma L∞.
+void compute_norms(const vector<double>& a, double &l2, double &linf) {
+    double sumsq = 0.0;   // acumulador para la suma de cuadrados
+    double maxabs = 0.0;  // máximo valor absoluto encontrado
+    for (double v : a) {
+        double av = fabs(v);    // valor absoluto del elemento actual
+        sumsq += av * av;       // contribución a la suma de cuadrados
+        if (av > maxabs)        // actualización del máximo absoluto
+            maxabs = av;
+    }
+    l2 = sqrt(sumsq);  // norma L2: raíz cuadrada de la suma de cuadrados
+    linf = maxabs;     // norma L∞: máximo absoluto
+}
+
+// main:
+// - Lee por consola si la entrada es un vector o una matriz.
+// - Según la opción, solicita dimensiones y valores, almacena todo en un vector linealizado.
+// - Llama a compute_norms para obtener L2 y L∞ y luego imprime los resultados.
+// - Maneja comprobaciones simples de entrada inválida.
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int mode = 0;
+    cout << "Tipo de entrada: 1=vector, 2=matriz: "; cout.flush();
+    if (!(cin >> mode) || (mode != 1 && mode != 2)) {
+        cerr << "Entrada invalida.\n";
+        return 1;
+    }
+
+    vector<double> data;
+    if (mode == 1) {
+        // Lectura de un vector: primero su tamaño n, luego n valores.
+        int n;
+    cout << "Ingrese tamaño del vector (n): "; cout.flush();
+        if (!(cin >> n) || n <= 0) {
+            cerr << "Tamaño invalido.\n";
+            return 1;
+        }
+        data.reserve(n);
+    cout << "Ingrese " << n << " valores (separados por espacios o saltos de linea):\n"; cout.flush();
+        for (int i = 0; i < n; ++i) {
+            double x; cin >> x;
+            data.push_back(x);
+        }
+    } else {
+        // Lectura de una matriz: filas r y columnas c, luego r*c valores (fila por fila).
+        int r, c;
+    cout << "Ingrese filas y columnas (r c): "; cout.flush();
+        if (!(cin >> r >> c) || r <= 0 || c <= 0) {
+            cerr << "Dimensiones invalidas.\n";
+            return 1;
+        }
+        int total = r * c;
+        data.reserve(total);
+    cout << "Ingrese " << total << " valores (fila por fila):\n"; cout.flush();
+        for (int i = 0; i < total; ++i) {
+            double x; cin >> x;
+            data.push_back(x);
+        }
+    }
+
+    // Cálculo de las normas llamando a la función implementada arriba.
+    double l2 = 0.0, linf = 0.0;
+    compute_norms(data, l2, linf);
+
+    // Impresión de resultados con formato fijo y 6 decimales.
+    cout << fixed << setprecision(6);
+    cout << "Norma L2 (euclidiana): " << l2 << "\n";
+    cout << "Norma L\u221e: " << linf << "\n";
+    return 0;
+}
+// Los comentarios acá los voy a mover al readme para que no queden en el código.
